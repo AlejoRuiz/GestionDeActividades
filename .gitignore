@@ -1,0 +1,9 @@
+# Node + Angular
+node_modules/
+dist/
+.angular/
+# Logs
+npm-debug.log*
+# OS / IDE
+.DS_Store
+.idea/
