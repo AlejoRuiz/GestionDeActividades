@@ -1,0 +1,23 @@
+# ── Activa el motor de reescritura ───────────────────────────────
+RewriteEngine On
+
+# ── API  ─────────────────────────────────────────────────────────
+# Proxy /api/* al backend Node que corre en el puerto 3000
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+
+# ── SPA fallback (Angular) ───────────────────────────────────────
+# Si el recurso no existe como archivo real, devuelve index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]
+
+# ── CORS headers básicos ─────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set Access-Control-Allow-Origin "*" "expr=%{REQUEST_URI} =~ m#^/api/#"
+  Header always set Access-Control-Allow-Methods "GET,POST,PUT,PATCH,DELETE,OPTIONS" "expr=%{REQUEST_URI} =~ m#^/api/#"
+  Header always set Access-Control-Allow-Headers "Content-Type, Authorization" "expr=%{REQUEST_URI} =~ m#^/api/#"
+</IfModule>
+
+# ── Opcional: comprimir estáticos ────────────────────────────────
+AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
