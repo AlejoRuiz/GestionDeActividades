@@ -22,12 +22,40 @@ cd ../frontend
 npm i --force
 npm start         # puerto 4200
 
-## Escalabilidad & Operaciones
+## 🌐 Operación y crecimiento
 
-| Tema | Idea en una frase |
-|------|------------------|
-| **10 k usuarios** | Corre el API en clúster/containers + mueve la “DB” de JSON a Postgres/Mongo + Redis cache + front en CDN. |
-| **Microservicios** | 1️⃣ `gateway` (HTTPS + rate-limit)  2️⃣ `auth`  3️⃣ `activity`  4️⃣ `report` (CSV/PDF) — lo justo, nada más. |
-| **Seguridad** | JWT corto + refresh, `helmet`, rate-limit, validación de entrada, HTTPS y secretos en vars de entorno. |
-| **CI/CD** | GitHub Actions → test + build (Angular & Docker API) → deploy a *staging* → smoke test → aprobación manual → producción. |
-| **Monitoreo** | Latencia p95, 5xx, CPU/Memoria, conexiones BD, intentos de login fallidos, tamaño de tabla, errores front. |
+### Escalabilidad
+- **Ejecución** Node en *cluster* / contenedores + balanceador (NGINX o cloud LB).  
+- **Persistencia** Migrar del JSON local a PostgreSQL / MongoDB con pool de conexiones.  
+- **Caché & CDN** Redis para lecturas frecuentes y bundle Angular servido desde CDN.  
+
+### Diseño por dominios
+| Servicio | Responsabilidad |
+|----------|-----------------|
+| **gateway** | HTTPS, rate-limit, OpenAPI, logging |
+| **auth-svc** | Login, refresh, roles |
+| **activity-svc** | CRUD + filtros de actividades |
+| **report-svc** | Generar CSV/PDF y envío mail |
+
+### Seguridad
+- JWT con expiración corta + refresh token.  
+- `helmet`, CORS restringido, rate-limit en `/auth`.  
+- Validación exhaustiva de payloads (`express-validator`), secretos en variables de entorno.
+
+### CI / CD (GitHub Actions)
+1. **Test & Lint** – backend y frontend.  
+2. **Build** – Angular `ng build` + imagen Docker del API.  
+3. **Deploy Staging** – Docker Compose / K8s; smoke-tests.  
+4. **Promoción manual** – despliegue rolling a producción.
+
+### Métricas esenciales
+- Latencia p95 y ratio 5xx por endpoint.  
+- CPU / memoria por réplica.  
+- Conexiones y consultas lentas en BD.  
+- Logs de login fallido.  
+- Crecimiento de la tabla `activities`.  
+
+> Observabilidad sugerida: Prometheus + Grafana (o Datadog/New Relic) con alertas a Slack.
+
+
+
