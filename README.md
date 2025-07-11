@@ -19,5 +19,5 @@ npm i
 npm run dev       # puerto 3000
 # en otra terminal
 cd ../frontend
-npm i
+npm i --force
 npm start         # puerto 4200
